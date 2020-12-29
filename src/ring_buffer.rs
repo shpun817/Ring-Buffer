@@ -23,6 +23,15 @@ where T: Copy + Default
         }
     }
 
+    /// Create a new RingBuffer from an existing slice, in ascending order of indices in the slice
+    pub fn new_from_slice(source: &[T]) -> Self {
+        let mut buf = Self::new(source.len());
+        for i in source.iter() {
+            buf.add(*i);
+        }
+        buf
+    }
+
     pub fn size(&self) -> usize {
         if self.end > self.front {
             self.end - self.front + 1
@@ -52,6 +61,13 @@ where T: Copy + Default
             }
         }
         self.data[self.end] = item;
+    }
+
+    /// Add items to the RingBuffer, in ascending order of indices in the slice
+    pub fn add_from_slice(&mut self, items: &[T]) {
+        for item in items.iter() {
+            self.add(*item);
+        }
     }
 
     pub fn peek(&self) -> Option<T> {
@@ -199,6 +215,36 @@ mod test {
 
         if buf.remove().is_some() {
             panic!();
+        }
+    }
+
+    #[test]
+    fn new_buf_from_slice() {
+        let mut buf = RingBuffer::<i32>::new_from_slice(&[9,4,1,5,6]);
+        if let Some(val) = buf.peek() {
+            assert!(val == 9);
+        }
+        assert!(buf.size() == 5);
+
+        buf.add(10);
+        assert!(buf.size() == 5);
+        if let Some(val) = buf.peek() {
+            assert!(val == 4);
+        }
+
+        if let Some(val) = buf.remove() {
+            assert!(val == 4);
+        }
+        assert!(buf.size() == 4);
+    }
+
+    #[test]
+    fn add_from_vec_to_slice() {
+        let mut buf = RingBuffer::<i32>::new_from_slice(&[9,4,1,5,6]);
+        buf.add_from_slice(&[1,2,3,4]);
+        assert!(buf.size() == 5);
+        if let Some(val) = buf.peek() {
+            assert!(val == 6);
         }
     }
 }
