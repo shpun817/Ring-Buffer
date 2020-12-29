@@ -89,7 +89,6 @@ where T: Copy + Default
 
 #[cfg(test)]
 mod test {
-
     use super::*;
 
     #[test]
