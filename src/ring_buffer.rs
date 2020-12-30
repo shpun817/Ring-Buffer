@@ -10,12 +10,8 @@ impl<T> RingBuffer<T>
 where T: Copy + Default
 {
     pub fn new(capacity: usize) -> Self {
-        let mut data = Vec::with_capacity(capacity);
-        for _ in 0..capacity {
-            data.push(T::default());
-        }
         Self {
-            data,
+            data: vec![T::default(); capacity],
             front: 0, // Pop from front
             end: 0, // Push to end
             capacity,
